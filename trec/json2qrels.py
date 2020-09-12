@@ -8,11 +8,13 @@ def main():
     parser = argparse.ArgumentParser(description='convert fair ranking qrel json to trec qrels')
     parser.add_argument('-R', dest='relfn')
     parser.add_argument('-G', dest='groupfn')
+    parser.add_argument('-c', dest='complete', default=False, action='store_true')
 
     args = parser.parse_args()
 
     relfn = args.relfn
     groupfn = args.groupfn
+    complete = args.complete
     did2gids = {}
     with open(groupfn,"r") as fp:
         for row in csv.reader(fp, delimiter=','):
@@ -28,7 +30,7 @@ def main():
                 if did in did2gids:
                     gids = did2gids[did]
                 rel = d["relevance"]
-                if (rel>0):
+                if complete or (rel>0):
                     rel = "%d"%rel
                     print("\t".join([qid,gids,did,rel]))
         

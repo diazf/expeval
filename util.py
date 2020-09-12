@@ -1,3 +1,4 @@
+import math
 #
 # function: l2
 #
@@ -5,12 +6,12 @@
 #
 def l2(x):
     if (len(x)==0):
-        return float("inf")
+        return math.inf
     retval = 0.0
     for k,v in x.items():
         retval = retval + v*v
     if (retval<=0):
-        return float("inf")
+        return math.inf
     return retval
 #
 # function: dot
@@ -26,3 +27,9 @@ def dot(x,y):
     return retval
 
 
+
+def gp(p,n):
+    if (n == math.inf):
+        return 1.0 / (1.0 - p)
+    else:
+        return (1.0 - pow(p,n)) / (1.0 - p)

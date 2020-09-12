@@ -4,7 +4,7 @@
 # QID GID DID REL
 #
 
-def read_qrels(fn, binarize):
+def read_qrels(fn, binarize, complete):
     qrels={}
     did2gids = {}
     #
@@ -27,9 +27,9 @@ def read_qrels(fn, binarize):
         gids = map(lambda x: int(x), itr.split("|"))
             
         rel=int(rel)
-        if (rel>0):
-            if (binarize):
-                rel = 1
+        if (rel>0) and binarize:
+            rel = 1
+        if complete or (rel>0):
             if not(qid in qrels):
                 qrels[qid] = {}
                 did2gids[qid] = {}
