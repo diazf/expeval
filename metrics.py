@@ -10,7 +10,7 @@ class Metric:
         self.upperBound = None
         self.defaultValue = defaultValue
         self.value = 0
-    def get(self,normalized = False):
+    def float(self,normalized = False):
         if normalized:
             if (self.lowerBound == None) or (self.upperBound == None) or (self.lowerBound == self.upperBound):
                 return self.defaultValue
@@ -18,23 +18,26 @@ class Metric:
                 return self.value / (self.upperBound - self.lowerBound)
         else:
             return self.value
+    def string(self,normalized = False):
+        v = self.float(normalized)
+        return "%f"%v
 
 #
 # relevance
 #
 
-def relevance(target, treatment):
-    return util.dot(target,treatment)
+def relevance(target, run):
+    return util.dot(target,run)
 #
 # disparity
 #
 
-def disparity(target, treatment):
-    return util.l2(treatment,False)
+def disparity(target, run):
+    return util.l2(run,False)
 
 #
 # ee
 #
 
-def ee(target, treatment):
-    return util.distance(target, treatment, False)
+def ee(target, run):
+    return util.distance(target, run, False)

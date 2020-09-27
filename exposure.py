@@ -9,7 +9,7 @@ from metrics import Metric
 # documents.
 
 #
-def target_exposures(qrels, umType, umPatience, umUtility, complete):
+def target(qrels, umType, umPatience, umUtility, complete):
     #
     # compute [ [relevanceLevel, count], ...] vector
     #
@@ -70,7 +70,7 @@ def target_exposures(qrels, umType, umPatience, umUtility, complete):
         relevance.upperBound = 0.0
     return target, disparity, relevance, difference
 
-def treatment_exposures(permutations, qrels, umType, umPatience, umUtility):
+def expected(permutations, qrels, umType, umPatience, umUtility):
     numSamples = len(permutations.keys())
     exposures = {}
     for itr,permutation in permutations.items():

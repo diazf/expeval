@@ -1,6 +1,7 @@
 import math
 import util
 import metrics
+from metrics import Metric
 
 def exposure(exposures, did2gids, qrels=None):
     retval = {}
@@ -13,17 +14,8 @@ def exposure(exposures, did2gids, qrels=None):
                     retval[gid] = retval[gid] + exposures[did]
     return retval
 
-def treatment_exposures(exposures, did2gids, qrels):
-    return exposure(exposures, did2gids, qrels)
-
-def target_exposures(exposures, did2gids, qrels, umType, umPatience, umUtility, complete):
-    target = exposure(exposures, did2gids, qrels)
-    n = len(exposures) if (complete) else math.inf
+def metrics(target, umType, umPatience, umUtility, n, r):
     k = len(target)
-    r = 0
-    for v in qrels.values():
-        if (v>0):
-            r = r + 1
     disparity = Metric("disparity", 0.0)
     relevance = Metric("relevance", 1.0)
     difference = Metric("difference", 0.0)
@@ -44,7 +36,7 @@ def target_exposures(exposures, did2gids, qrels, umType, umPatience, umUtility, 
     if (k==1):
         disparity.lowerBound = 0
         disparity.upperBound = 0
-    return target, disparity, relevance, difference
+    return disparity, relevance, difference
 #
 # BOUNDS ON GROUP EXPOSURE
 #

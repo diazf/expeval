@@ -61,7 +61,7 @@ def parseArguments():
     parser.add_argument('-r', dest='umUtility', default=0.50, 
                         help='utility parameter in range [0,1] (default: 0.5). ')
     
-    parser.add_argument('-b', dest='binarize', default=False, 
+    parser.add_argument('-B', dest='binarize', default=False, 
                         action='store_true', 
                         help='convert graded to binary relevance.')
     

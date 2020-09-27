@@ -2,7 +2,7 @@
 
 import metrics
 import data
-import individual
+import exposure
 import group
 import util
 import cli
@@ -31,9 +31,9 @@ def main():
     relevance  = {}
     difference = {}
     for qid, qrels_qid in qrels.items():
-        targ, disp, rel, diff = individual.target_exposures(qrels_qid, 
-                                                            umType, umPatience,
-                                                            umUtility, complete)
+        targ, disp, rel, diff = exposure.target(qrels_qid, umType, 
+                                                umPatience, umUtility, 
+                                                complete)
         targExp[qid] = targ
         disparity[qid] = disp
         relevance[qid] = rel
@@ -47,10 +47,11 @@ def main():
         for qid in targExp.keys():
             if qid in did2gids:
                 t = targExp[qid]
-                targ, disp, rel, diff = group.target_exposures(t, did2gids[qid], 
-                                                               qrels[qid], umType, 
-                                                               umPatience, umUtility, 
-                                                               complete)
+                targ = group.exposure(t, did2gids[qid], qrels[qid])
+                n = len(t) if complete else math.inf
+                r = sum(1 for v in qrels[qid].values() if v > 0)
+                disp, rel, diff = group.metrics(targ, umType, umPatience, 
+                                                umUtility, n, r)
                 targExp[qid] = targ
                 disparity[qid] = disp
                 relevance[qid] = rel
@@ -62,15 +63,14 @@ def main():
                 difference[qid] = None
              
     #
-    # get treatment exposures
+    # get expected exposures for the run
     #
     permutations = data.read_topfile(topfn)
     runExp = {}
     for qid, permutations_qid in permutations.items():
         if (qid in qrels):
-            runExp[qid] = individual.treatment_exposures(permutations_qid, qrels[qid], 
-                                                         umType, umPatience,   
-                                                         umUtility)
+            runExp[qid] = exposure.expected(permutations_qid, qrels[qid], umType, 
+                                            umPatience, umUtility)
     #
     # aggregate exposures if group evaluation and replace queries missing groups 
     # with nulls
@@ -79,11 +79,11 @@ def main():
         for qid in runExp.keys():
             if (qid in did2gids):
                 r = runExp[qid]
-                runExp[qid] = group.treatment_exposures(r, did2gids[qid], qrels[qid])
+                runExp[qid] = group.exposure(r, did2gids[qid], qrels[qid])
             else:
                 runExp[qid] = None
     #
-    # compute and print per-query individual metrics
+    # compute and print per-query metrics
     #
     for qid in targExp.keys():
         #
@@ -111,9 +111,9 @@ def main():
         #
         # output
         #
-        print("\t".join([disparity[qid].name, qid, str(disparity[qid].get(normalize))]))
-        print("\t".join([relevance[qid].name, qid, str(relevance[qid].get(normalize))]))
-        print("\t".join([difference[qid].name, qid, str(difference[qid].get(normalize))]))
+        print("\t".join([disparity[qid].name, qid, disparity[qid].string(normalize)]))
+        print("\t".join([relevance[qid].name, qid, relevance[qid].string(normalize)]))
+        print("\t".join([difference[qid].name, qid, difference[qid].string(normalize)]))
         
 
 if __name__ == '__main__':
