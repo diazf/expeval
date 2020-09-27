@@ -13,4 +13,4 @@ done
 ./trec/json2qrels.py -G $GROUPFILE_CSV -R $RELFILE_JSON -c > qrels.tsv
 ./trec/json2runfile.py -I $RUNFILE_JSON > runfile.tsv
 
-./expeval.py -I runfile.tsv -R qrels.tsv -g -c
+./expeval.py -I runfile.tsv -R qrels.tsv -G -C

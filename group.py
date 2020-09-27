@@ -1,5 +1,6 @@
 import math
 import util
+import metrics
 
 def exposure(exposures, did2gids, qrels=None):
     retval = {}
@@ -23,28 +24,27 @@ def target_exposures(exposures, did2gids, qrels, umType, umPatience, umUtility, 
     for v in qrels.values():
         if (v>0):
             r = r + 1
-    disparity_lb = 0.0
-    disparity_ub = 0.0
-    relevance_lb = 0.0
-    relevance_ub = 0.0
-    difference_lb = 0.0
-    difference_ub = 0.0
+    disparity = Metric("disparity", 0.0)
+    relevance = Metric("relevance", 1.0)
+    difference = Metric("difference", 0.0)
     if (umType == "rbp"):
-        disparity_ub = disparity_ub_rbp(umPatience, r, k)
-        disparity_lb = disparity_lb_rbp(umPatience, r, k)
-        relevance_ub = relevance_ub_rbp(umPatience, target, r)
-        relevance_lb = relevance_lb_rbp(target,umPatience, r)
-        difference_ub = difference_ub_rbp(umPatience, target, r)
+        disparity.upperBound = disparity_ub_rbp(umPatience, r, k)
+        disparity.lowerBound = disparity_lb_rbp(umPatience, r, k)
+        relevance.upperBound = relevance_ub_rbp(umPatience, target, r)
+        relevance.lowerBound = relevance_lb_rbp(target,umPatience, r)
+        difference.upperBound = difference_ub_rbp(umPatience, target, r)
+        difference.lowerBound = 0.0
     elif (umType == "gerr"):
-        disparity_ub = disparity_ub_gerr(umPatience, umUtility, r, k)
-        disparity_lb = disparity_lb_gerr(umPatience, umUtility, r, k)
-        relevance_ub = relevance_ub_gerr(umPatience, umUtility, target, r)
-        relevance_lb = relevance_lb_gerr(umPatience, umUtility, target, r)
-        difference_ub = difference_ub_gerr(umPatience, umUtility, target, r)
+        disparity.upperBound = disparity_ub_gerr(umPatience, umUtility, r, k)
+        disparity.lowerBound = disparity_lb_gerr(umPatience, umUtility, r, k)
+        relevance.upperBound = relevance_ub_gerr(umPatience, umUtility, target, r)
+        relevance.lowerBound = relevance_lb_gerr(umPatience, umUtility, target, r)
+        difference.upperBound = difference_ub_gerr(umPatience, umUtility, target, r)
+        difference.lowerBound = 0.0        
     if (k==1):
-        disparity_lb = 0
-        disparity_ub = 0
-    return target, disparity_lb, disparity_ub, relevance_lb, relevance_ub, 0.0, difference_ub
+        disparity.lowerBound = 0
+        disparity.upperBound = 0
+    return target, disparity, relevance, difference
 #
 # BOUNDS ON GROUP EXPOSURE
 #
@@ -53,7 +53,7 @@ def target_exposures(exposures, did2gids, qrels, umType, umPatience, umUtility, 
 
 # assume all groups get all of the exposure
 def disparity_ub_rbp(p,n,k):
-    e = util.gp(p,n) 
+    e = util.geometricSeries(p,n) 
     return e * e * k
 
 # assume all groups get equal exposure
@@ -62,12 +62,12 @@ def disparity_lb_rbp(p,n,k):
     if (n == math.inf):
         return 0.0
     else:
-        exposure = util.gp(p,n)
+        exposure = util.geometricSeries(p,n)
         return k * exposure * exposure
 
 # assume the all groups get all of the exposure
 def relevance_ub_rbp(p,target,n):
-    attention_mass = util.gp(p,n)
+    attention_mass = util.geometricSeries(p,n)
     retval = 0.0
     for v in target.values():
         retval = retval + v * attention_mass
@@ -78,7 +78,7 @@ def relevance_lb_rbp(p,target,n):
     return 0.0
 # assume the least relevant group gets all of the exposure
 def difference_ub_rbp(p,target,n):
-    exposure_mass = util.gp(p,n)
+    exposure_mass = util.geometricSeries(p,n)
     #
     # case 1: no exposure to any relevant group
     #

@@ -1,3 +1,5 @@
+from permutation import Permutation
+
 #
 # read_qrels
 #
@@ -41,9 +43,7 @@ def read_qrels(fn, binarize, complete):
                     did2gids[qid][did].append(gid)
     fp.close()
     return qrels, did2gids
-
     
-
 def read_topfile(fn):
     #
     # get ranked lists
@@ -60,7 +60,7 @@ def read_topfile(fn):
         if not(qid in rls):
             rls[qid] = {}
         if not(itr in rls[qid]):
-            rls[qid][itr] = []
-        rls[qid][itr].append([score,did])
+            rls[qid][itr] = Permutation()
+        rls[qid][itr].add(rank,did)
     fp.close()
     return rls

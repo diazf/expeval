@@ -2,9 +2,9 @@ import math
 #
 # function: l2
 #
-# returns sum_i x_i*x_i
+# returns sqrt(sum_i x_i*x_i) unless you request dropping sqrt
 #
-def l2(x):
+def l2(x,sqrt=True):
     if (len(x)==0):
         return math.inf
     retval = 0.0
@@ -12,7 +12,21 @@ def l2(x):
         retval = retval + v*v
     if (retval<=0):
         return math.inf
-    return retval
+    return math.sqrt(retval) if sqrt else retval
+#
+# function: distance
+#
+# compute euclidean distance unless you request dropping the sqrt
+#
+def distance(x,y,sqrt=True):
+    retval = 0.0
+    keys = set(x) | set(y)
+    for k in keys:
+        x_k = x[k] if (k in x) else 0.0
+        y_k = y[k] if (k in y) else 0.0
+        d = x_k - y_k
+        retval = retval + d*d
+    return math.sqrt(retval) if sqrt else retval
 #
 # function: dot
 #
@@ -20,15 +34,19 @@ def l2(x):
 #
 def dot(x,y):
     retval = 0.0
-    for k,x_k in x.items():
-        if k in y:
-            v = x_k * y[k]
-            retval = retval + v
+    keys = set(x) & set(y)
+    for k in keys:
+        v = x[k] * y[k]
+        retval = retval + v
     return retval
 
+#
+# function: geometricSeries
+#
+# return \sum_{i=0}^n p^i
+#
 
-
-def gp(p,n):
+def geometricSeries(p,n):
     if (n == math.inf):
         return 1.0 / (1.0 - p)
     else:
