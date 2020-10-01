@@ -47,7 +47,7 @@ def main():
         for qid in targExp.keys():
             if qid in did2gids:
                 t = targExp[qid]
-                targ = group.exposure(t, did2gids[qid], qrels[qid])
+                targ = group.exposure(t, did2gids[qid], qrels[qid], complete)
                 n = len(t) if complete else math.inf
                 r = sum(1 for v in qrels[qid].values() if v > 0)
                 disp, rel, diff = group.metrics(targ, umType, umPatience, 
@@ -78,8 +78,8 @@ def main():
     if groupEvaluation:
         for qid in runExp.keys():
             if (qid in did2gids):
-                r = runExp[qid]
-                runExp[qid] = group.exposure(r, did2gids[qid], qrels[qid])
+                rexp = runExp[qid]
+                runExp[qid] = group.exposure(rexp, did2gids[qid], qrels[qid], complete)
             else:
                 runExp[qid] = None
     #
@@ -103,11 +103,10 @@ def main():
             #
             # compute the metrics for queries with results
             #
-            t = targExp[qid]
             r = runExp[qid]
-            disparity[qid].value = metrics.disparity(t,r)
-            relevance[qid].value = metrics.relevance(t,r)            
-            difference[qid].value = metrics.ee(t,r)
+            disparity[qid].compute(r)
+            relevance[qid].compute(r)
+            difference[qid].compute(r)
         #
         # output
         #

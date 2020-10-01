@@ -50,7 +50,7 @@ def read_topfile(fn):
     #
     fp = open(fn,"r")
     sample_ids=set([])
-    rls = {} # qid, iteration ,[score,did]
+    rls = {} # qid x iteration -> permutation
     for line in fp:
         fields = line.strip().split()
         qid,itr,did,rank,score=fields[:5]
