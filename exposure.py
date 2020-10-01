@@ -83,7 +83,7 @@ def target(qrels, umType, p, u, complete):
     b = 0 # numDominating
     targetExposurePerRelevanceLevel = {}
     for i in range(len(relevanceLevels)):
-        grade = relevanceLevels[i][0]
+        g = relevanceLevels[i][0]
         m = relevanceLevels[i][1]
         if (umType == "rbp"):
             te_g = (p**(b) - p**(b+m)) / (m*(1.0-p))
@@ -93,7 +93,7 @@ def target(qrels, umType, p, u, complete):
                 te_g = (pp**(b) - pp**(b+m)) / (m*(1.0-pp))
             else:
                 te_g = ( (1.0-u)**(b)*(p**(b) - p**(b+m)) ) / (m*(1.0-p))
-        targetExposurePerRelevanceLevel[grade] = te_g
+        targetExposurePerRelevanceLevel[g] = te_g
         b = b + m
     #
     # create { did : exposure }

@@ -119,7 +119,7 @@ class Difference(Metric):
         
             # contribution lost from relevant documents
             for d,e in target.items():
-                ub = ub + e*e
+                ub += e*e
             # contribution gained from nonrelevant documents
             ub = ub + util.geometricSeries(pp,n)
         else:
@@ -133,7 +133,7 @@ class Difference(Metric):
             target_vector.sort()
             for i in range(len(target_vector)):
                 diff = pow(pp,i) - target_vector[i]
-                ub = ub + diff*diff
+                ub += diff*diff
         self.upperBound = ub
     def compute(self,run):
         self.value = util.distance(self.target, run, False)
@@ -154,7 +154,7 @@ class GroupRelevance(Metric):
         attention_mass = util.geometricSeries(p,r)
         ub = 0.0
         for v in target.values():
-            ub = ub + v * ub
+            ub += v * ub
         self.upperBound = ub
         
         #
@@ -209,7 +209,7 @@ class GroupDifference(Metric):
         #
         norm = 0.0
         for d,e in target.items():
-            norm = norm + e*e
+            norm += e*e
         #
         # case 2: max exposure to all groups
         #
@@ -218,7 +218,7 @@ class GroupDifference(Metric):
         diff = 0.0
         for d,e in target.items():
             dist.append(e)
-            diff = diff + (exposure_mass-e)*(exposure_mass-e)
+            diff += (exposure_mass-e)*(exposure_mass-e)
         self.upperBound = norm if (norm > diff) else diff
         #
         # lower bound: 
