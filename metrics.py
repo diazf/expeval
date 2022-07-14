@@ -15,7 +15,7 @@ class Metric:
             if (self.lowerBound == None) or (self.upperBound == None) or (self.lowerBound == self.upperBound):
                 return self.defaultValue
             else:
-                return self.value / (self.upperBound - self.lowerBound)
+                return (self.value - self.lowerBound) / (self.upperBound - self.lowerBound)
         else:
             return self.value
     def string(self,normalized = False):
